@@ -1,0 +1,6 @@
+dependencies {
+	compile project(':Core')
+	
+	compile 'com.memetix:microsoft-translator-java-api:0.6.2'
+	
+}
