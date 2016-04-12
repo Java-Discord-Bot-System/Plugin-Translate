@@ -28,13 +28,13 @@ public class TranslatePlugin extends Plugin {
 		public void onCommand(final CommandEvent event, final String string) {
 			if (string.equalsIgnoreCase("list")) {
 				final MessageBuilder builder = new MessageBuilder();
-				builder.appendString("Supported languages are:\n", Formatting.BOLD);
+				builder.appendString("Supported languages are:", Formatting.BOLD).newLine();
 				for (final Language lang : Language.values()) {
 					if (lang == Language.AUTO_DETECT) {
 						continue;
 					}
 					try {
-						builder.appendString(Language.ENGLISH.getName(lang));
+						builder.appendString(Language.ENGLISH.getName(lang)).newLine();
 					} catch (final Exception e) {
 						e.printStackTrace();
 					}
@@ -76,18 +76,26 @@ public class TranslatePlugin extends Plugin {
 
 	@Override
 	public void load() throws PluginLoadingException {
+		final Config config = this.getSharedConfig("microsoftazure");
 
-		final Config config = this.getSharedConfig("datamarket.azure.com");
-
-		if (config.getString("id", "Your ID") == "Your ID" || config.getString("secret", "Your Secret") == "Your Secret") {
+		if (config.getString("id", "Your ID") == "Your ID" | config.getString("secret", "Your Secret") == "Your Secret") {
 			throw new PluginLoadingException("Pls add your datamarket.azure.com id and secret to the config");
 		}
 
 		MicrosoftTranslatorAPI.setClientId(config.getString("id"));
 		MicrosoftTranslatorAPI.setClientSecret(config.getString("secret"));
 
-		this.registerCommand(new TranslateCommand());
+		preloadLanguageNames();
 
+		this.registerCommand(new TranslateCommand());
+	}
+
+	private void preloadLanguageNames() {
+		try {
+			Language.ENGLISH.getName(Language.ENGLISH);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
